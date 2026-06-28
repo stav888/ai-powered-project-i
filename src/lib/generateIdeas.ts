@@ -77,7 +77,7 @@ export async function generateProjectIdeas(
 - Aider (practical and well-structured development approach)
 - Chunkr (intelligent document and data processing)`
 
-  const prompt = window.spark.llmPrompt`You are an expert AI product designer and project idea generator.
+  const promptText = `You are an expert AI product designer and project idea generator.
 
 Generate exactly ${count} unique, innovative project ideas for ${baseTopics}.
 ${categoryContext}
@@ -132,28 +132,58 @@ Use this exact format:
 }`
 
   try {
-    const response = await window.spark.llm(prompt, 'gpt-4o', true)
-    const parsed = JSON.parse(response)
+    const response = await window.spark.llm(promptText, 'gpt-4o', true)
     
-    if (!parsed.projects || !Array.isArray(parsed.projects)) {
-      throw new Error('Invalid response format')
+    if (!response || typeof response !== 'string') {
+      console.error('Invalid LLM response:', response)
+      throw new Error('LLM returned an invalid response')
     }
 
-    return parsed.projects.map((p: any) => ({
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      name: p.name,
-      shortDescription: p.shortDescription,
-      fullDescription: p.fullDescription,
-      keyFeatures: p.keyFeatures,
-      difficulty: p.difficulty,
-      tags: p.tags,
-      sparkPrompt: p.sparkPrompt,
-      generatedAt: new Date().toISOString(),
-      categories: categories.length > 0 ? categories : undefined,
-      isFavorite: false
-    }))
+    let parsed
+    try {
+      parsed = JSON.parse(response)
+    } catch (parseError) {
+      console.error('Failed to parse LLM response:', response)
+      console.error('Parse error:', parseError)
+      throw new Error('Failed to parse LLM response as JSON')
+    }
+    
+    if (!parsed.projects || !Array.isArray(parsed.projects)) {
+      console.error('Invalid response structure:', parsed)
+      throw new Error('LLM response missing projects array')
+    }
+
+    if (parsed.projects.length !== count) {
+      console.warn(`Expected ${count} projects but got ${parsed.projects.length}`)
+    }
+
+    const validatedProjects = parsed.projects.map((p: any, index: number) => {
+      if (!p.name || !p.shortDescription || !p.keyFeatures || !p.difficulty || !p.tags || !p.sparkPrompt) {
+        console.error(`Project ${index} is missing required fields:`, p)
+        throw new Error(`Project ${index} is incomplete`)
+      }
+
+      return {
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: p.name,
+        shortDescription: p.shortDescription,
+        fullDescription: p.fullDescription || p.shortDescription,
+        keyFeatures: Array.isArray(p.keyFeatures) ? p.keyFeatures : [],
+        difficulty: p.difficulty,
+        tags: Array.isArray(p.tags) ? p.tags : [],
+        sparkPrompt: p.sparkPrompt,
+        generatedAt: new Date().toISOString(),
+        categories: categories.length > 0 ? categories : undefined,
+        isFavorite: false
+      }
+    })
+
+    return validatedProjects
   } catch (error) {
     console.error('Error generating ideas:', error)
+    if (error instanceof Error) {
+      throw new Error(`Failed to generate project ideas: ${error.message}`)
+    }
     throw new Error('Failed to generate project ideas')
   }
 }
