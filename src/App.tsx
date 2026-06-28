@@ -40,11 +40,15 @@ function App() {
       const historyArray = history || []
       const existingNames = historyArray.map(idea => idea.name)
 
+      console.log('Starting generation with categories:', categorySelection.mainCategories)
+      
       const newIdeas = await generateProjectIdeas(
         count,
         existingNames,
         categorySelection.mainCategories.length > 0 ? categorySelection : undefined
       )
+      
+      console.log('Successfully generated', newIdeas.length, 'ideas')
       
       setCurrentIdeas(newIdeas)
       setHistory(currentHistory => [...(currentHistory || []), ...newIdeas])
@@ -58,8 +62,10 @@ function App() {
         description: 'Scroll down to explore them'
       })
     } catch (error) {
+      console.error('Generation failed in handleGenerate:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
       toast.error('Failed to generate ideas', {
-        description: 'Please try again'
+        description: errorMessage.length > 100 ? 'Please try again or select different categories' : errorMessage
       })
     } finally {
       setIsGenerating(false)

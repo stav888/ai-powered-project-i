@@ -86,39 +86,80 @@ Use this exact format:
   const prompt = spark.llmPrompt`${promptText}`
 
   try {
+    console.log('Generating ideas with prompt for categories:', categories)
+    console.log('Calling LLM...')
+    
     const response = await spark.llm(prompt, 'gpt-4o', true)
     
+    console.log('LLM response received')
+    console.log('Response type:', typeof response)
+    console.log('Response length:', response?.length)
+    
     if (!response || typeof response !== 'string') {
-      console.error('Invalid LLM response:', response)
-      throw new Error('LLM returned an invalid response')
+      console.error('Invalid LLM response type:', typeof response)
+      throw new Error('LLM returned an invalid response (not a string)')
+    }
+
+    if (response.length === 0) {
+      console.error('LLM returned empty string')
+      throw new Error('LLM returned an empty response')
     }
 
     let parsed
     try {
-      parsed = JSON.parse(response)
+      const cleanedResponse = response.trim()
+      console.log('Attempting to parse response, first 200 chars:', cleanedResponse.substring(0, 200))
+      parsed = JSON.parse(cleanedResponse)
+      console.log('Successfully parsed JSON')
+      console.log('Parsed keys:', Object.keys(parsed))
+      console.log('Projects count:', parsed?.projects?.length)
     } catch (parseError) {
-      console.error('Failed to parse LLM response:', response)
-      console.error('Parse error:', parseError)
-      throw new Error('Failed to parse LLM response as JSON')
+      console.error('Failed to parse LLM response as JSON')
+      console.error('Response preview (first 500 chars):', response.substring(0, 500))
+      console.error('Response preview (last 200 chars):', response.substring(Math.max(0, response.length - 200)))
+      console.error('Parse error details:', parseError)
+      throw new Error(`JSON parse failed: ${parseError instanceof Error ? parseError.message : 'Unknown parse error'}`)
     }
     
-    if (!parsed.projects || !Array.isArray(parsed.projects)) {
-      console.error('Invalid response structure:', parsed)
-      throw new Error('LLM response missing projects array')
+    if (!parsed || typeof parsed !== 'object') {
+      console.error('Parsed result is not an object:', parsed)
+      throw new Error('LLM response is not a valid JSON object')
     }
 
-    if (parsed.projects.length !== count) {
-      console.warn(`Expected ${count} projects but got ${parsed.projects.length}`)
+    if (!parsed.projects) {
+      console.error('Response missing "projects" key. Keys found:', Object.keys(parsed))
+      throw new Error('LLM response missing "projects" property')
     }
 
-    const validatedProjects = parsed.projects.map((p: any, index: number) => {
-      if (!p.name || !p.shortDescription || !p.keyFeatures || !p.difficulty || !p.tags || !p.sparkPrompt) {
-        console.error(`Project ${index} is missing required fields:`, p)
-        throw new Error(`Project ${index} is incomplete`)
+    if (!Array.isArray(parsed.projects)) {
+      console.error('"projects" is not an array, it is:', typeof parsed.projects)
+      throw new Error('LLM response "projects" is not an array')
+    }
+
+    if (parsed.projects.length === 0) {
+      console.error('LLM returned empty projects array')
+      throw new Error('No projects were generated (empty array)')
+    }
+
+    console.log(`Processing ${parsed.projects.length} projects (expecting ${count})`)
+
+    const validatedProjects = parsed.projects.slice(0, count).map((p: any, index: number) => {
+      const missingFields = []
+      if (!p.name) missingFields.push('name')
+      if (!p.shortDescription) missingFields.push('shortDescription')
+      if (!p.keyFeatures) missingFields.push('keyFeatures')
+      if (!p.difficulty) missingFields.push('difficulty')
+      if (!p.tags) missingFields.push('tags')
+      if (!p.sparkPrompt) missingFields.push('sparkPrompt')
+      
+      if (missingFields.length > 0) {
+        console.error(`Project ${index} (${p.name || 'unnamed'}) is missing fields:`, missingFields)
+        console.error(`Project data:`, JSON.stringify(p, null, 2))
+        throw new Error(`Project ${index} is missing required fields: ${missingFields.join(', ')}`)
       }
 
       return {
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        id: `${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
         name: p.name,
         shortDescription: p.shortDescription,
         fullDescription: p.fullDescription || p.shortDescription,
@@ -132,12 +173,18 @@ Use this exact format:
       }
     })
 
+    console.log('✓ Successfully validated', validatedProjects.length, 'projects')
     return validatedProjects
+    
   } catch (error) {
-    console.error('Error generating ideas:', error)
+    console.error('❌ Error generating ideas - Full error:', error)
+    console.error('Error type:', error?.constructor?.name)
+    console.error('Error message:', error instanceof Error ? error.message : String(error))
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    
     if (error instanceof Error) {
       throw new Error(`Failed to generate project ideas: ${error.message}`)
     }
-    throw new Error('Failed to generate project ideas')
+    throw new Error(`Failed to generate project ideas: ${String(error)}`)
   }
 }
