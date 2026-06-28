@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ProjectCard } from '@/components/ProjectCard'
+import { CategorySelector } from '@/components/CategorySelector'
+import { SearchBar } from '@/components/SearchBar'
 import { generateProjectIdeas } from '@/lib/generateIdeas'
-import { ProjectIdea } from '@/lib/types'
+import { ProjectIdea, CategorySelection } from '@/lib/types'
 import { Sparkle, Clock } from '@phosphor-icons/react'
 import { Toaster } from '@/components/ui/sonner'
 import { toast } from 'sonner'
@@ -14,6 +16,11 @@ function App() {
   const [currentIdeas, setCurrentIdeas] = useState<ProjectIdea[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [categorySelection, setCategorySelection] = useState<CategorySelection>({
+    mainCategory: null,
+    subCategories: []
+  })
 
   useEffect(() => {
     const initializeIdeas = async () => {
@@ -34,12 +41,21 @@ function App() {
     try {
       const historyArray = history || []
       const existingNames = historyArray.map(idea => idea.name)
-      const newIdeas = await generateProjectIdeas(count, existingNames)
+      const newIdeas = await generateProjectIdeas(
+        count,
+        existingNames,
+        categorySelection.mainCategory || undefined,
+        categorySelection.subCategories.length > 0 ? categorySelection.subCategories : undefined
+      )
       
       setCurrentIdeas(newIdeas)
       setHistory(currentHistory => [...(currentHistory || []), ...newIdeas])
       
-      toast.success(`Generated ${count} new project ideas!`, {
+      const categoryInfo = categorySelection.mainCategory
+        ? ` for ${categorySelection.mainCategory}${categorySelection.subCategories.length > 0 ? ` (${categorySelection.subCategories.join(', ')})` : ''}`
+        : ''
+      
+      toast.success(`Generated ${count} new project ideas${categoryInfo}!`, {
         description: 'Scroll down to explore them'
       })
     } catch (error) {
@@ -50,6 +66,20 @@ function App() {
       setIsGenerating(false)
     }
   }
+
+  const filteredIdeas = useMemo(() => {
+    const historyArray = history || []
+    if (!searchQuery.trim()) return historyArray
+
+    const query = searchQuery.toLowerCase().trim()
+    return historyArray.filter(idea =>
+      idea.name.toLowerCase().includes(query) ||
+      idea.shortDescription.toLowerCase().includes(query) ||
+      idea.fullDescription.toLowerCase().includes(query) ||
+      idea.tags.some(tag => tag.toLowerCase().includes(query)) ||
+      (idea.categories && idea.categories.some(cat => cat.toLowerCase().includes(query)))
+    )
+  }, [history, searchQuery])
 
   const formatDate = (isoString: string) => {
     const date = new Date(isoString)
@@ -72,13 +102,15 @@ function App() {
   }
 
   const historyArray = history || []
+  const displayedIdeas = searchQuery ? filteredIdeas : currentIdeas
+  const olderIdeas = searchQuery ? [] : historyArray.slice(0, -6).reverse()
 
   return (
     <div className="min-h-screen">
       <Toaster position="top-center" />
       
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-12 md:py-20">
-        <div className="flex flex-col gap-16 md:gap-24">
+        <div className="flex flex-col gap-12 md:gap-16">
           
           <header className="flex flex-col gap-6 text-center">
             <div className="flex items-center justify-center gap-3">
@@ -88,40 +120,85 @@ function App() {
               </h1>
             </div>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Discover unique project ideas tailored for AI agents, RAG systems, LLM tools, and productivity applications. Each idea comes with a ready-to-use prompt for GitHub Spark.
+              Discover unique project ideas across multiple categories. Each idea comes with a ready-to-use prompt for GitHub Spark.
             </p>
           </header>
 
-          <section className="flex flex-col gap-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {currentIdeas.map((project, index) => (
-                <ProjectCard key={project.id} project={project} index={index} />
-              ))}
-            </div>
+          <div className="flex flex-col gap-6">
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search by name, description, tags, or categories..."
+            />
+          </div>
 
-            <div className="flex justify-center pt-4">
-              <Button
-                onClick={() => handleGenerate(3)}
-                disabled={isGenerating}
-                size="lg"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
-              >
-                {isGenerating ? (
-                  <>
-                    <Sparkle className="mr-2 animate-spin" weight="fill" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkle className="mr-2" weight="fill" />
-                    Generate 3 New Ideas
-                  </>
-                )}
-              </Button>
-            </div>
+          {!searchQuery && (
+            <>
+              <section className="flex flex-col gap-6">
+                <CategorySelector
+                  selection={categorySelection}
+                  onSelectionChange={setCategorySelection}
+                />
+              </section>
+
+              <div className="flex justify-center">
+                <Button
+                  onClick={() => handleGenerate(3)}
+                  disabled={isGenerating}
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Sparkle className="mr-2 animate-spin" weight="fill" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkle className="mr-2" weight="fill" />
+                      Generate 3 New Ideas
+                    </>
+                  )}
+                </Button>
+              </div>
+            </>
+          )}
+
+          <section className="flex flex-col gap-8">
+            {searchQuery && (
+              <div className="flex items-center gap-3">
+                <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
+                  Search Results
+                </h2>
+                <span className="text-muted-foreground">
+                  ({displayedIdeas.length} {displayedIdeas.length === 1 ? 'result' : 'results'})
+                </span>
+              </div>
+            )}
+            
+            {displayedIdeas.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                {displayedIdeas.map((project, index) => (
+                  <ProjectCard key={project.id} project={project} index={index} />
+                ))}
+              </div>
+            ) : searchQuery ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground text-lg">
+                  No projects found matching "{searchQuery}"
+                </p>
+                <Button
+                  variant="link"
+                  onClick={() => setSearchQuery('')}
+                  className="mt-4"
+                >
+                  Clear search
+                </Button>
+              </div>
+            ) : null}
           </section>
 
-          {historyArray.length > 6 && (
+          {!searchQuery && olderIdeas.length > 0 && (
             <>
               <Separator className="my-8" />
               
@@ -134,7 +211,7 @@ function App() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                  {historyArray.slice(0, -6).reverse().map((project, index) => (
+                  {olderIdeas.map((project, index) => (
                     <div key={project.id} className="flex flex-col gap-2">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Clock className="w-3 h-3" />

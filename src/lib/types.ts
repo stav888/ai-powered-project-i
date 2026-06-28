@@ -10,8 +10,20 @@ export interface ProjectIdea {
   tags: string[]
   sparkPrompt: string
   generatedAt: string
+  categories?: string[]
 }
 
 export interface GeneratedIdeaHistory {
   ideas: ProjectIdea[]
+}
+
+export interface MainCategory {
+  name: string
+  icon: string
+  subCategories: string[]
+}
+
+export interface CategorySelection {
+  mainCategory: string | null
+  subCategories: string[]
 }
