@@ -5,7 +5,10 @@ import { CategorySelection } from '@/lib/types'
 import { 
   Sparkle, BookOpen, Heart, CheckSquare, Palette, 
   Users, House, CurrencyDollar, CookingPot, Airplane, 
-  Briefcase, DotsThree 
+  Briefcase, DotsThree, Plant, HouseLine, GameController,
+  HandsClapping, Moon, FilmStrip, Robot, FlowArrow,
+  ListChecks, TerminalWindow, Brain, ChartLine, PenNib,
+  Browser, GitBranch, Chats
 } from '@phosphor-icons/react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { X } from '@phosphor-icons/react'
@@ -27,7 +30,23 @@ const iconMap: Record<string, any> = {
   'cooking-pot': CookingPot,
   'airplane': Airplane,
   'briefcase': Briefcase,
-  'dots-three': DotsThree
+  'dots-three': DotsThree,
+  'plant': Plant,
+  'house-line': HouseLine,
+  'game-controller': GameController,
+  'hands-clapping': HandsClapping,
+  'moon': Moon,
+  'film-strip': FilmStrip,
+  'robot': Robot,
+  'flow-arrow': FlowArrow,
+  'list-checks': ListChecks,
+  'terminal-window': TerminalWindow,
+  'brain': Brain,
+  'chart-line': ChartLine,
+  'pen-nib': PenNib,
+  'browser': Browser,
+  'git-branch': GitBranch,
+  'chats': Chats
 }
 
 export function CategorySelector({ selection, onSelectionChange }: CategorySelectorProps) {
@@ -97,8 +116,8 @@ export function CategorySelector({ selection, onSelectionChange }: CategorySelec
         )}
       </div>
 
-      <ScrollArea className="h-[200px]">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+      <ScrollArea className="h-[280px]">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {MAIN_CATEGORIES.map((category) => {
             const Icon = iconMap[category.icon] || DotsThree
             const isSelected = selection.mainCategories.includes(category.name)
