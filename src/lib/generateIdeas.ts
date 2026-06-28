@@ -77,7 +77,7 @@ export async function generateProjectIdeas(
 - Aider (practical and well-structured development approach)
 - Chunkr (intelligent document and data processing)`
 
-  const promptText = `You are an expert AI product designer and project idea generator.
+  const prompt = (window.spark.llmPrompt as any)`You are an expert AI product designer and project idea generator.
 
 Generate exactly ${count} unique, innovative project ideas for ${baseTopics}.
 ${categoryContext}
@@ -132,7 +132,7 @@ Use this exact format:
 }`
 
   try {
-    const response = await window.spark.llm(promptText, 'gpt-4o', true)
+    const response = await window.spark.llm(prompt, 'gpt-4o', true)
     
     if (!response || typeof response !== 'string') {
       console.error('Invalid LLM response:', response)
