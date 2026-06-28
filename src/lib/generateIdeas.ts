@@ -77,7 +77,7 @@ export async function generateProjectIdeas(
 - Aider (practical and well-structured development approach)
 - Chunkr (intelligent document and data processing)`
 
-  const prompt = spark.llmPrompt`You are an expert AI product designer and project idea generator.
+  const promptText = `You are an expert AI product designer and project idea generator.
 
 Generate exactly ${count} unique, innovative project ideas for ${baseTopics}.
 ${categoryContext}
@@ -130,6 +130,8 @@ Use this exact format:
     }
   ]
 }`
+
+  const prompt = spark.llmPrompt`${promptText}`
 
   try {
     const response = await spark.llm(prompt, 'gpt-4o', true)
