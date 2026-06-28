@@ -59,7 +59,7 @@ export function ProjectCard({ project, index = 0, onToggleFavorite }: ProjectCar
 
   return (
     <Card 
-      className="project-card p-4 flex flex-col gap-3 border-border shadow-sm relative"
+      className="project-card p-5 flex flex-col gap-4 border-border shadow-md hover:shadow-lg relative bg-card"
       style={{
         animationDelay: `${index * 100}ms`,
         animationFillMode: 'backwards'
@@ -70,48 +70,48 @@ export function ProjectCard({ project, index = 0, onToggleFavorite }: ProjectCar
           variant="ghost"
           size="sm"
           onClick={handleToggleFavorite}
-          className="absolute top-2 right-2 h-8 w-8 p-0 hover:bg-accent/10"
+          className="absolute top-3 right-3 h-9 w-9 p-0 hover:bg-accent/10 rounded-full"
         >
           <Heart 
-            size={18}
+            size={20}
             weight={project.isFavorite ? 'fill' : 'regular'}
             className={project.isFavorite ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}
           />
         </Button>
       )}
 
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-start justify-between gap-3 pr-9">
-          <h3 className="text-base font-semibold tracking-tight leading-tight">{project.name}</h3>
-          <Badge className={`shrink-0 text-xs px-1.5 py-0 ${getDifficultyColor(project.difficulty)}`}>
-            {project.difficulty}
-          </Badge>
+      <div className="flex flex-col gap-2 pr-10">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="text-lg font-semibold tracking-tight leading-tight text-foreground">{project.name}</h3>
         </div>
-        <p className="text-xs text-muted-foreground leading-snug">
+        <Badge className={`w-fit shrink-0 text-xs px-2 py-0.5 font-medium ${getDifficultyColor(project.difficulty)}`}>
+          {project.difficulty}
+        </Badge>
+        <p className="text-sm text-muted-foreground leading-relaxed">
           {project.shortDescription}
         </p>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <h4 className="text-xs font-semibold uppercase tracking-wide text-foreground/70">
+      <div className="flex flex-col gap-2.5">
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground/60">
           Key Features
         </h4>
-        <ul className="space-y-1">
+        <ul className="space-y-2">
           {project.keyFeatures.map((feature, i) => (
-            <li key={i} className="flex items-start gap-1.5 text-xs text-foreground/80 leading-snug">
-              <span className="mt-1 h-1 w-1 rounded-full bg-accent shrink-0" />
+            <li key={i} className="flex items-start gap-2.5 text-sm text-foreground/85 leading-relaxed">
+              <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
               <span>{feature}</span>
             </li>
           ))}
         </ul>
       </div>
 
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-2">
         {project.tags.map((tag, i) => (
           <Badge 
             key={i} 
             variant="outline"
-            className="bg-secondary/50 text-secondary-foreground border-border/50 text-xs px-1.5 py-0"
+            className="bg-secondary/60 text-secondary-foreground border-border text-xs px-2 py-0.5"
           >
             {tag}
           </Badge>
@@ -120,16 +120,16 @@ export function ProjectCard({ project, index = 0, onToggleFavorite }: ProjectCar
 
       <Button 
         onClick={handleCopy}
-        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-xs py-2 h-auto"
+        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-sm py-3 h-auto mt-1"
       >
         {copied ? (
           <>
-            <Check className="mr-1.5" weight="bold" size={14} />
+            <Check className="mr-2" weight="bold" size={16} />
             Copied!
           </>
         ) : (
           <>
-            <Copy className="mr-1.5" weight="bold" size={14} />
+            <Copy className="mr-2" weight="bold" size={16} />
             Copy Prompt to Build in Spark
           </>
         )}

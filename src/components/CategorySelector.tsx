@@ -96,9 +96,9 @@ export function CategorySelector({ selection, onSelectionChange }: CategorySelec
   )
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold">Select Categories</h3>
           <span className="text-xs text-muted-foreground">(select multiple)</span>
         </div>
@@ -107,15 +107,15 @@ export function CategorySelector({ selection, onSelectionChange }: CategorySelec
             variant="ghost"
             size="sm"
             onClick={clearSelection}
-            className="text-muted-foreground hover:text-foreground h-7 px-2 text-xs"
+            className="text-muted-foreground hover:text-foreground h-8 px-3 text-xs"
           >
-            <X className="mr-1" weight="bold" size={14} />
+            <X className="mr-1.5" weight="bold" size={14} />
             Clear All
           </Button>
         )}
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2.5">
         {MAIN_CATEGORIES.map((category) => {
           const Icon = iconMap[category.icon] || DotsThree
           const isSelected = selection.mainCategories.includes(category.name)
@@ -124,14 +124,14 @@ export function CategorySelector({ selection, onSelectionChange }: CategorySelec
             <Button
               key={category.name}
               variant={isSelected ? 'default' : 'outline'}
-              className={`h-auto py-2 px-2 flex flex-col items-center gap-1 ${
+              className={`h-auto py-2.5 px-3 flex flex-col items-center gap-1.5 ${
                 isSelected 
-                  ? 'bg-primary text-primary-foreground border-primary' 
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm' 
                   : 'hover:border-accent hover:bg-accent/5'
               }`}
               onClick={() => handleMainCategoryClick(category.name)}
             >
-              <Icon size={18} weight={isSelected ? 'fill' : 'regular'} />
+              <Icon size={20} weight={isSelected ? 'fill' : 'regular'} />
               <span className="text-xs text-center leading-tight font-medium">
                 {category.name}
               </span>
@@ -141,28 +141,28 @@ export function CategorySelector({ selection, onSelectionChange }: CategorySelec
       </div>
 
       {selectedCategories.length > 0 && (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           {selectedCategories.map((category) => (
             <div 
               key={category.name}
-              className="flex flex-col gap-2 p-2 bg-muted/30 rounded-lg border border-border"
+              className="flex flex-col gap-2.5 p-3.5 bg-secondary/30 rounded-lg border border-border"
             >
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-foreground">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-foreground">
                   {category.name}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   (optional sub-categories)
                 </span>
               </div>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {category.subCategories.map((subCat) => {
                   const isSelected = (selection.subCategories[category.name] || []).includes(subCat)
                   return (
                     <Badge
                       key={subCat}
                       variant={isSelected ? 'default' : 'outline'}
-                      className={`cursor-pointer transition-all text-xs px-1.5 py-0 ${
+                      className={`cursor-pointer transition-all text-xs px-2.5 py-1 ${
                         isSelected
                           ? 'bg-accent text-accent-foreground hover:bg-accent/90'
                           : 'hover:border-accent hover:bg-accent/10'

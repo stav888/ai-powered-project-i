@@ -93,13 +93,20 @@ For each project idea, provide:
 6. 3-5 relevant tags (e.g., "Productivity", "AI", "Learning", etc.)
 7. A comprehensive Spark prompt that could be used to build this project in GitHub Spark
 
-The Spark prompt should be detailed and include:
-- Clear project description
-- Complete feature list with specific functionality
-- Design requirements (modern, clean, premium UI)
-- Any AI/LLM behavior specifications if relevant
-- User interaction flows
-- Data persistence needs (using useKV for persistent data, useState for temporary UI state)
+The Spark prompt should be highly detailed, elaborate, and production-ready. It must include:
+- Clear and compelling project description with context and purpose
+- Complete feature list with specific functionality and user interactions
+- Detailed UI/UX requirements (modern design, color scheme suggestions, layout structure, component hierarchy)
+- Specific AI/LLM behavior specifications (if relevant) including prompt engineering approaches, context handling, and response formatting
+- User interaction flows and edge cases
+- Data persistence strategy (using useKV for persistent data like user preferences/saved items, useState for temporary UI state)
+- Responsive design requirements and mobile considerations
+- Error handling and loading states
+- Accessibility considerations
+- Any third-party integrations or APIs needed
+- Example data structures or schemas when relevant
+
+Make the Spark prompt significantly more complete, structured, and actionable than a basic description. It should be a comprehensive blueprint that a developer could use immediately.
 ${excludeList}
 
 Return the result as a valid JSON object with a single property called "projects" that contains an array of project objects.

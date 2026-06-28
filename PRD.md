@@ -1,14 +1,14 @@
-# AI-Powered Project Ideas Generator (Enhanced)
+# AI-Powered Project Ideas Generator (Enhanced & Comfortable)
 
-A sophisticated web application that generates unique, high-quality project ideas across diverse life categories and tool domains, complete with ready-to-use prompts for building in GitHub Spark.
+A sophisticated web application that generates unique, high-quality project ideas across diverse life categories and tool domains, complete with ready-to-use elaborate prompts for building in GitHub Spark. The design emphasizes comfortable spacing, balanced layout, and a clean, modern aesthetic.
 
 **Experience Qualities**:
-1. **Inspiring** - Each project idea sparks creativity across all aspects of life, from spirituality to technical tools
-2. **Organized** - Intuitive category system with 27 main categories (Life Areas + Tools) and sub-categories for targeted idea generation
-3. **Discoverable** - Powerful search functionality and favorites system to find and refine relevant ideas
+1. **Inspiring** - Each project idea sparks creativity across all aspects of life with elaborate, actionable build prompts
+2. **Comfortable** - Pleasant spacing, balanced layout, and clean typography create an inviting experience
+3. **Discoverable** - Intuitive category system with 27 main categories and powerful search/favorites functionality
 
 **Complexity Level**: Light Application (multiple features with basic state)
-This is an enhanced project idea generator with multi-category selection, favorites-based generation, search functionality, state management for history, LLM integration for context-aware generation, and clipboard functionality.
+This is an enhanced project idea generator with multi-category selection, favorites-based generation, search functionality, state management for history, LLM integration for context-aware generation, elaborate prompt generation, and clipboard functionality.
 
 ## Essential Features
 
@@ -40,12 +40,12 @@ This is an enhanced project idea generator with multi-category selection, favori
 - **Progression**: Ideas generated → Saved with timestamp and categories → Displayed in "Previously Generated Ideas" section → Older ideas show generation date
 - **Success criteria**: All ideas persist across sessions, chronologically ordered, category info preserved
 
-### Feature 5: Copy Spark Prompt
-- **Functionality**: Generates and copies a comprehensive, ready-to-use prompt for building the project in GitHub Spark
-- **Purpose**: Removes friction between inspiration and action
+### Feature 5: Elaborate Copy Spark Prompt
+- **Functionality**: Generates and copies a comprehensive, production-ready, elaborate prompt for building the project in GitHub Spark
+- **Purpose**: Removes friction between inspiration and action with highly detailed build instructions
 - **Trigger**: User clicks "Copy Prompt to Build in Spark" on any project card
-- **Progression**: Button click → Prompt copied to clipboard → Visual success toast with checkmark → Button shows "Copied!" briefly
-- **Success criteria**: Prompt is detailed, actionable, successfully copies with user feedback
+- **Progression**: Button click → Elaborate prompt (with full feature specs, UI/UX details, AI behavior, data structures, edge cases) copied to clipboard → Visual success toast with checkmark → Button shows "Copied!" briefly
+- **Success criteria**: Prompt is detailed, elaborate, actionable, significantly more complete than basic descriptions, successfully copies with user feedback
 
 ### Feature 6: Initial Project Display
 - **Functionality**: Shows 6 pre-generated diverse project ideas on first load
@@ -69,25 +69,25 @@ This is an enhanced project idea generator with multi-category selection, favori
 
 ## Design Direction
 
-The design should evoke **inspiration, clarity, and professional sophistication** with a sense of **exploration and discovery**. The interface feels calm and organized, with the expanded category selector being inviting and the search being prominent. Favorites integration adds a personal touch. Subtle animations enhance the feeling of ideas "coming to life" without being distracting.
+The design should evoke **calm professionalism, comfortable exploration, and confident inspiration**. The interface feels spacious without being empty, balanced without being cluttered. Typography is clean and readable, spacing is generous and pleasant, and the category system feels inviting. The improved layout prioritizes comfortable breathing room while maintaining visual hierarchy. Subtle animations enhance delight without distraction.
 
 ## Color Selection
 
-A refined, modern palette that communicates innovation and versatility with excellent readability.
+A refined, modern palette with softer contrast that communicates innovation and versatility with excellent readability and comfortable viewing.
 
-- **Primary Color**: Deep indigo `oklch(0.35 0.15 270)` - Represents innovation and thoughtful creativity
+- **Primary Color**: Softer indigo `oklch(0.38 0.14 270)` - Represents thoughtful creativity without being overwhelming
 - **Secondary Colors**: 
-  - Soft slate gray `oklch(0.95 0.005 270)` for backgrounds - Creates calm, spacious feel
-  - Medium slate `oklch(0.50 0.02 270)` for secondary text - Professional and readable
-- **Accent Color**: Electric cyan `oklch(0.70 0.18 210)` - Eye-catching for search, CTAs, and selection states
-- **Favorite Color**: Red for favorited hearts - Clear visual indicator
+  - Very soft slate gray `oklch(0.96 0.003 270)` for backgrounds - Creates spacious, airy feel
+  - Medium slate `oklch(0.52 0.02 270)` for secondary text - Professional and comfortable to read
+- **Accent Color**: Bright cyan `oklch(0.68 0.16 210)` - Eye-catching for search, CTAs, and interactive states without being harsh
+- **Favorite Color**: Red for favorited hearts - Clear, warm visual indicator
 - **Foreground/Background Pairings**:
-  - Primary (Deep Indigo): White text - Ratio 8.2:1 ✓
-  - Accent (Electric Cyan): Dark text - Ratio 7.1:1 ✓
-  - Background (Soft Slate): Dark text - Ratio 14.8:1 ✓
+  - Primary (Softer Indigo): White text - Ratio 8.5:1 ✓
+  - Accent (Bright Cyan): White text - Ratio 7.3:1 ✓
+  - Background (Very Soft Slate): Dark text - Ratio 15.2:1 ✓
   - Cards (Pure White): Dark text - Ratio 16.5:1 ✓
-  - Selected Categories: Primary background with white text for clear distinction
-  - Favorites: Red heart icons for clear favorited state
+  - Selected Categories: Primary background with white text, subtle shadow for depth
+  - Favorites: Red heart icons with comfortable contrast
 
 ## Font Selection
 
@@ -97,27 +97,29 @@ Typography should feel modern, technical yet approachable, with excellent readab
 **Secondary Font**: Inter (body) - Exceptional readability and professional feel
 
 - **Typographic Hierarchy**:
-  - H1 (Page Title): Space Grotesk Bold/48px/tight (-0.02em)
-  - H2 (Section Titles): Space Grotesk Semibold/32px/tight (-0.01em)
-  - H3 (Project Names): Space Grotesk Semibold/24px/normal
-  - Category Labels: Inter Medium/12px/tight
-  - Body (Descriptions): Inter Regular/16px/relaxed (1.6)
-  - Small (Tags, Meta): Inter Medium/14px/normal
-  - Search Input: Inter Regular/16px/normal
+  - H1 (Page Title): Space Grotesk Bold/20px desktop, 24px tablet/tight (-0.02em) - Smaller, less dominant
+  - Subtitle: Inter Regular/12px/relaxed - Compact yet readable
+  - H2 (Section Titles): Space Grotesk Semibold/18px/tight (-0.01em)
+  - H3 (Project Names): Space Grotesk Semibold/18px/normal - Comfortable hierarchy
+  - Category Labels: Inter Medium/12px/tight - Small but legible
+  - Body (Descriptions): Inter Regular/14px/relaxed (1.6) - Comfortable reading
+  - Small (Tags, Meta): Inter Medium/12px/normal
+  - Search Input: Inter Regular/14px/normal
 
 ## Animations
 
-Animations should feel purposeful and refined - enhancing clarity and delight.
+Animations should feel purposeful, smooth, and refined - enhancing clarity and providing moments of delight without calling excessive attention.
 
 **Key Animations**:
-- **Card entrance**: Subtle fade-up with stagger (100ms delay between cards)
-- **Category selection**: Quick highlight transition with subtle scale
-- **Favorite heart**: Smooth fill animation when toggled
+- **Card entrance**: Gentle fade-up with comfortable stagger (100ms delay between cards)
+- **Card hover**: Smooth lift with enhanced shadow (translateY -3px, 280ms ease)
+- **Category selection**: Quick highlight transition with subtle background change
+- **Favorite heart**: Smooth fill animation with scale when toggled
 - **Search interactions**: Smooth appearance of clear button
-- **Button interactions**: Gentle hover lift, quick press feedback
-- **Copy confirmation**: Toast slides in from top with success icon
+- **Button interactions**: Gentle hover lift, quick press feedback with comfortable timing
+- **Copy confirmation**: Toast slides in from top with success icon and friendly message
 - **Loading state**: Elegant rotating sparkle on generate button
-- **Scroll behavior**: Smooth scroll to new ideas after generation
+- **Generate button**: Larger, more prominent with comfortable padding
 
 ## Component Selection
 
@@ -163,13 +165,17 @@ Animations should feel purposeful and refined - enhancing clarity and delight.
   - X (clear search, clear category selection)
 
 - **Spacing**:
-  - Page padding: px-6 md:px-12 lg:px-24
-  - Section gaps: gap-12 md:gap-16
-  - Card grid: gap-6 md:gap-8
-  - Card internal padding: p-6 md:p-8
-  - Category grid: gap-3
-  - Category scroll area: h-[280px]
-  - Search bar height: h-12
+  - Page padding: px-6 md:px-8 (comfortable margins)
+  - Section gaps: gap-8 (pleasant breathing room)
+  - Card grid: gap-6 (balanced card separation)
+  - Card internal padding: p-5 (comfortable content space)
+  - Card internal gaps: gap-4 (clear section separation)
+  - Category grid: gap-2.5 (touchable spacing)
+  - Category internal: gap-4 between sections
+  - Sub-category padding: p-3.5 (comfortable expansion panels)
+  - Search bar height: h-11 (comfortable target)
+  - Generate button: px-8 py-6 (prominent, easy to click)
+  - Favorites toggle: p-4 (comfortable interaction area)
 
 - **Mobile**:
   - Single column card layout on mobile

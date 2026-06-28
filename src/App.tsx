@@ -144,17 +144,17 @@ function App() {
     <div className="min-h-screen">
       <Toaster position="top-center" />
       
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
-        <div className="flex flex-col gap-5">
+      <div className="max-w-7xl mx-auto px-6 md:px-8 py-8 md:py-10">
+        <div className="flex flex-col gap-8">
           
-          <header className="flex flex-col gap-2 text-center">
-            <div className="flex items-center justify-center gap-2">
-              <Sparkle className="w-6 h-6 text-accent" weight="fill" />
-              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          <header className="flex flex-col gap-2.5 text-center">
+            <div className="flex items-center justify-center gap-2.5">
+              <Sparkle className="w-5 h-5 text-accent" weight="fill" />
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">
                 AI-Powered Project Ideas
               </h1>
             </div>
-            <p className="text-xs md:text-sm text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xs text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Discover unique project ideas across multiple categories. Each idea comes with a ready-to-use prompt for GitHub Spark.
             </p>
           </header>
@@ -173,7 +173,7 @@ function App() {
               />
 
               {favoriteCount > 0 && (
-                <div className="flex items-center justify-center gap-3 p-3 bg-muted/30 rounded-lg border border-border">
+                <div className="flex items-center justify-center gap-3 p-4 bg-secondary/40 rounded-lg border border-border">
                   <Heart 
                     className={generateFromFavorites ? "text-red-500" : "text-muted-foreground"} 
                     size={20} 
@@ -190,20 +190,20 @@ function App() {
                 </div>
               )}
 
-              <div className="flex justify-center">
+              <div className="flex justify-center pt-2">
                 <Button
                   onClick={() => handleGenerate(3)}
                   disabled={isGenerating}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 py-5 text-sm shadow-md hover:shadow-lg transition-all"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-sm shadow-md hover:shadow-lg transition-all"
                 >
                   {isGenerating ? (
                     <>
-                      <Sparkle className="mr-2 animate-spin" weight="fill" size={18} />
+                      <Sparkle className="mr-2.5 animate-spin" weight="fill" size={20} />
                       Generating...
                     </>
                   ) : (
                     <>
-                      <Sparkle className="mr-2" weight="fill" size={18} />
+                      <Sparkle className="mr-2.5" weight="fill" size={20} />
                       Generate 3 New Ideas
                     </>
                   )}
@@ -212,20 +212,20 @@ function App() {
             </>
           )}
 
-          <section className="flex flex-col gap-4">
+          <section className="flex flex-col gap-5">
             {searchQuery && (
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold tracking-tight">
+              <div className="flex items-center gap-2.5">
+                <h2 className="text-lg font-semibold tracking-tight">
                   Search Results
                 </h2>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-sm text-muted-foreground">
                   ({displayedIdeas.length} {displayedIdeas.length === 1 ? 'result' : 'results'})
                 </span>
               </div>
             )}
             
             {displayedIdeas.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {displayedIdeas.map((project, index) => (
                   <ProjectCard 
                     key={project.id} 
@@ -236,14 +236,14 @@ function App() {
                 ))}
               </div>
             ) : searchQuery ? (
-              <div className="text-center py-8">
-                <p className="text-sm text-muted-foreground">
+              <div className="text-center py-12">
+                <p className="text-sm text-muted-foreground mb-4">
                   No projects found matching "{searchQuery}"
                 </p>
                 <Button
                   variant="link"
                   onClick={() => setSearchQuery('')}
-                  className="mt-3 text-sm"
+                  className="text-sm"
                 >
                   Clear search
                 </Button>
@@ -253,21 +253,21 @@ function App() {
 
           {!searchQuery && olderIdeas.length > 0 && (
             <>
-              <Separator className="my-4" />
+              <Separator className="my-6" />
               
-              <section className="flex flex-col gap-4">
-                <div className="flex items-center gap-2">
+              <section className="flex flex-col gap-5">
+                <div className="flex items-center gap-2.5">
                   <Clock className="w-5 h-5 text-muted-foreground" weight="bold" />
-                  <h2 className="text-xl font-semibold tracking-tight">
+                  <h2 className="text-lg font-semibold tracking-tight">
                     Previously Generated Ideas
                   </h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {olderIdeas.map((project, index) => (
-                    <div key={project.id} className="flex flex-col gap-1">
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground px-1">
-                        <Clock className="w-3 h-3" />
+                    <div key={project.id} className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground px-1">
+                        <Clock className="w-3.5 h-3.5" />
                         <span>{formatDate(project.generatedAt)}</span>
                       </div>
                       <ProjectCard 
