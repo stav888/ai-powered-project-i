@@ -1,15 +1,12 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
 import { ProjectCard } from '@/components/ProjectCard'
 import { CategorySelector } from '@/components/CategorySelector'
-import { SearchBar } from '@/components/SearchBar'
 import { generateProjectIdeas } from '@/lib/generateIdeas'
 import { ProjectIdea, CategorySelection } from '@/lib/types'
-import { Sparkle, Clock, Heart } from '@phosphor-icons/react'
+import { Sparkle, Clock } from '@phosphor-icons/react'
 import { Toaster } from '@/components/ui/sonner'
 import { toast } from 'sonner'
 
@@ -18,12 +15,10 @@ function App() {
   const [currentIdeas, setCurrentIdeas] = useState<ProjectIdea[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
   const [categorySelection, setCategorySelection] = useState<CategorySelection>({
     mainCategories: [],
     subCategories: {}
   })
-  const [generateFromFavorites, setGenerateFromFavorites] = useState(false)
 
   useEffect(() => {
     const initializeIdeas = async () => {
@@ -44,30 +39,19 @@ function App() {
     try {
       const historyArray = history || []
       const existingNames = historyArray.map(idea => idea.name)
-      
-      const favoriteProjects = generateFromFavorites 
-        ? historyArray.filter(idea => idea.isFavorite)
-        : undefined
 
       const newIdeas = await generateProjectIdeas(
         count,
         existingNames,
-        categorySelection.mainCategories.length > 0 ? categorySelection : undefined,
-        favoriteProjects
+        categorySelection.mainCategories.length > 0 ? categorySelection : undefined
       )
       
       setCurrentIdeas(newIdeas)
       setHistory(currentHistory => [...(currentHistory || []), ...newIdeas])
       
       let generationContext = ''
-      if (generateFromFavorites && favoriteProjects && favoriteProjects.length > 0) {
-        generationContext = ` based on your ${favoriteProjects.length} favorite${favoriteProjects.length === 1 ? '' : 's'}`
-      } else if (categorySelection.mainCategories.length > 0) {
+      if (categorySelection.mainCategories.length > 0) {
         generationContext = ` for ${categorySelection.mainCategories.join(', ')}`
-        const allSubCats = Object.values(categorySelection.subCategories).flat()
-        if (allSubCats.length > 0) {
-          generationContext += ` (${allSubCats.join(', ')})`
-        }
       }
       
       toast.success(`Generated ${count} new project ideas${generationContext}!`, {
@@ -81,40 +65,6 @@ function App() {
       setIsGenerating(false)
     }
   }
-
-  const handleToggleFavorite = (id: string) => {
-    setHistory(currentHistory => {
-      const updated = (currentHistory || []).map(idea =>
-        idea.id === id ? { ...idea, isFavorite: !idea.isFavorite } : idea
-      )
-      
-      setCurrentIdeas(prevIdeas => 
-        prevIdeas.map(idea =>
-          idea.id === id ? { ...idea, isFavorite: !idea.isFavorite } : idea
-        )
-      )
-      
-      return updated
-    })
-  }
-
-  const filteredIdeas = useMemo(() => {
-    const historyArray = history || []
-    if (!searchQuery.trim()) return historyArray
-
-    const query = searchQuery.toLowerCase().trim()
-    return historyArray.filter(idea =>
-      idea.name.toLowerCase().includes(query) ||
-      idea.shortDescription.toLowerCase().includes(query) ||
-      idea.fullDescription.toLowerCase().includes(query) ||
-      idea.tags.some(tag => tag.toLowerCase().includes(query)) ||
-      (idea.categories && idea.categories.some(cat => cat.toLowerCase().includes(query)))
-    )
-  }, [history, searchQuery])
-
-  const favoriteCount = useMemo(() => {
-    return (history || []).filter(idea => idea.isFavorite).length
-  }, [history])
 
   const formatDate = (isoString: string) => {
     const date = new Date(isoString)
@@ -137,8 +87,7 @@ function App() {
   }
 
   const historyArray = history || []
-  const displayedIdeas = searchQuery ? filteredIdeas : currentIdeas
-  const olderIdeas = searchQuery ? [] : historyArray.slice(0, -6).reverse()
+  const olderIdeas = historyArray.slice(0, -6).reverse()
 
   return (
     <div className="min-h-screen">
@@ -159,99 +108,46 @@ function App() {
             </p>
           </header>
 
-          <SearchBar
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder="Search by name, description, tags, or categories..."
+          <CategorySelector
+            selection={categorySelection}
+            onSelectionChange={setCategorySelection}
           />
 
-          {!searchQuery && (
-            <>
-              <CategorySelector
-                selection={categorySelection}
-                onSelectionChange={setCategorySelection}
-              />
-
-              {favoriteCount > 0 && (
-                <div className="flex items-center justify-center gap-3 p-4 bg-secondary/40 rounded-lg border border-border">
-                  <Heart 
-                    className={generateFromFavorites ? "text-red-500" : "text-muted-foreground"} 
-                    size={20} 
-                    weight={generateFromFavorites ? "fill" : "regular"}
-                  />
-                  <Label htmlFor="generate-favorites" className="text-sm font-medium cursor-pointer">
-                    Generate from {favoriteCount} Favorite{favoriteCount === 1 ? '' : 's'}
-                  </Label>
-                  <Switch
-                    id="generate-favorites"
-                    checked={generateFromFavorites}
-                    onCheckedChange={setGenerateFromFavorites}
-                  />
-                </div>
+          <div className="flex justify-center pt-2">
+            <Button
+              onClick={() => handleGenerate(3)}
+              disabled={isGenerating}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-sm shadow-md hover:shadow-lg transition-all"
+            >
+              {isGenerating ? (
+                <>
+                  <Sparkle className="mr-2.5 animate-spin" weight="fill" size={20} />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkle className="mr-2.5" weight="fill" size={20} />
+                  Generate 3 New Ideas
+                </>
               )}
-
-              <div className="flex justify-center pt-2">
-                <Button
-                  onClick={() => handleGenerate(3)}
-                  disabled={isGenerating}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-sm shadow-md hover:shadow-lg transition-all"
-                >
-                  {isGenerating ? (
-                    <>
-                      <Sparkle className="mr-2.5 animate-spin" weight="fill" size={20} />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkle className="mr-2.5" weight="fill" size={20} />
-                      Generate 3 New Ideas
-                    </>
-                  )}
-                </Button>
-              </div>
-            </>
-          )}
+            </Button>
+          </div>
 
           <section className="flex flex-col gap-5">
-            {searchQuery && (
-              <div className="flex items-center gap-2.5">
-                <h2 className="text-lg font-semibold tracking-tight">
-                  Search Results
-                </h2>
-                <span className="text-sm text-muted-foreground">
-                  ({displayedIdeas.length} {displayedIdeas.length === 1 ? 'result' : 'results'})
-                </span>
-              </div>
-            )}
-            
-            {displayedIdeas.length > 0 ? (
+            {currentIdeas.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {displayedIdeas.map((project, index) => (
+                {currentIdeas.map((project, index) => (
                   <ProjectCard 
                     key={project.id} 
                     project={project} 
                     index={index}
-                    onToggleFavorite={handleToggleFavorite}
                   />
                 ))}
               </div>
-            ) : searchQuery ? (
-              <div className="text-center py-12">
-                <p className="text-sm text-muted-foreground mb-4">
-                  No projects found matching "{searchQuery}"
-                </p>
-                <Button
-                  variant="link"
-                  onClick={() => setSearchQuery('')}
-                  className="text-sm"
-                >
-                  Clear search
-                </Button>
-              </div>
-            ) : null}
+            )}
           </section>
 
-          {!searchQuery && olderIdeas.length > 0 && (
+          {olderIdeas.length > 0 && (
             <>
               <Separator className="my-6" />
               
@@ -273,7 +169,6 @@ function App() {
                       <ProjectCard 
                         project={project} 
                         index={index}
-                        onToggleFavorite={handleToggleFavorite}
                       />
                     </div>
                   ))}
