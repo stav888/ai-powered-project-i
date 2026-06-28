@@ -2,12 +2,14 @@ import { useState, useEffect, useMemo } from 'react'
 import { useKV } from '@github/spark/hooks'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 import { ProjectCard } from '@/components/ProjectCard'
 import { CategorySelector } from '@/components/CategorySelector'
 import { SearchBar } from '@/components/SearchBar'
 import { generateProjectIdeas } from '@/lib/generateIdeas'
 import { ProjectIdea, CategorySelection } from '@/lib/types'
-import { Sparkle, Clock } from '@phosphor-icons/react'
+import { Sparkle, Clock, Heart } from '@phosphor-icons/react'
 import { Toaster } from '@/components/ui/sonner'
 import { toast } from 'sonner'
 
@@ -18,9 +20,10 @@ function App() {
   const [isInitialLoad, setIsInitialLoad] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [categorySelection, setCategorySelection] = useState<CategorySelection>({
-    mainCategory: null,
-    subCategories: []
+    mainCategories: [],
+    subCategories: {}
   })
+  const [generateFromFavorites, setGenerateFromFavorites] = useState(false)
 
   useEffect(() => {
     const initializeIdeas = async () => {
@@ -41,21 +44,33 @@ function App() {
     try {
       const historyArray = history || []
       const existingNames = historyArray.map(idea => idea.name)
+      
+      const favoriteProjects = generateFromFavorites 
+        ? historyArray.filter(idea => idea.isFavorite)
+        : undefined
+
       const newIdeas = await generateProjectIdeas(
         count,
         existingNames,
-        categorySelection.mainCategory || undefined,
-        categorySelection.subCategories.length > 0 ? categorySelection.subCategories : undefined
+        categorySelection.mainCategories.length > 0 ? categorySelection : undefined,
+        favoriteProjects
       )
       
       setCurrentIdeas(newIdeas)
       setHistory(currentHistory => [...(currentHistory || []), ...newIdeas])
       
-      const categoryInfo = categorySelection.mainCategory
-        ? ` for ${categorySelection.mainCategory}${categorySelection.subCategories.length > 0 ? ` (${categorySelection.subCategories.join(', ')})` : ''}`
-        : ''
+      let generationContext = ''
+      if (generateFromFavorites && favoriteProjects && favoriteProjects.length > 0) {
+        generationContext = ` based on your ${favoriteProjects.length} favorite${favoriteProjects.length === 1 ? '' : 's'}`
+      } else if (categorySelection.mainCategories.length > 0) {
+        generationContext = ` for ${categorySelection.mainCategories.join(', ')}`
+        const allSubCats = Object.values(categorySelection.subCategories).flat()
+        if (allSubCats.length > 0) {
+          generationContext += ` (${allSubCats.join(', ')})`
+        }
+      }
       
-      toast.success(`Generated ${count} new project ideas${categoryInfo}!`, {
+      toast.success(`Generated ${count} new project ideas${generationContext}!`, {
         description: 'Scroll down to explore them'
       })
     } catch (error) {
@@ -65,6 +80,22 @@ function App() {
     } finally {
       setIsGenerating(false)
     }
+  }
+
+  const handleToggleFavorite = (id: string) => {
+    setHistory(currentHistory => {
+      const updated = (currentHistory || []).map(idea =>
+        idea.id === id ? { ...idea, isFavorite: !idea.isFavorite } : idea
+      )
+      
+      setCurrentIdeas(prevIdeas => 
+        prevIdeas.map(idea =>
+          idea.id === id ? { ...idea, isFavorite: !idea.isFavorite } : idea
+        )
+      )
+      
+      return updated
+    })
   }
 
   const filteredIdeas = useMemo(() => {
@@ -80,6 +111,10 @@ function App() {
       (idea.categories && idea.categories.some(cat => cat.toLowerCase().includes(query)))
     )
   }, [history, searchQuery])
+
+  const favoriteCount = useMemo(() => {
+    return (history || []).filter(idea => idea.isFavorite).length
+  }, [history])
 
   const formatDate = (isoString: string) => {
     const date = new Date(isoString)
@@ -141,6 +176,24 @@ function App() {
                 />
               </section>
 
+              {favoriteCount > 0 && (
+                <section className="flex items-center justify-center gap-4 p-4 bg-muted/30 rounded-lg border border-border">
+                  <Heart 
+                    className={generateFromFavorites ? "text-red-500" : "text-muted-foreground"} 
+                    size={24} 
+                    weight={generateFromFavorites ? "fill" : "regular"}
+                  />
+                  <Label htmlFor="generate-favorites" className="text-base font-medium cursor-pointer">
+                    Generate from {favoriteCount} Favorite{favoriteCount === 1 ? '' : 's'}
+                  </Label>
+                  <Switch
+                    id="generate-favorites"
+                    checked={generateFromFavorites}
+                    onCheckedChange={setGenerateFromFavorites}
+                  />
+                </section>
+              )}
+
               <div className="flex justify-center">
                 <Button
                   onClick={() => handleGenerate(3)}
@@ -179,7 +232,12 @@ function App() {
             {displayedIdeas.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 {displayedIdeas.map((project, index) => (
-                  <ProjectCard key={project.id} project={project} index={index} />
+                  <ProjectCard 
+                    key={project.id} 
+                    project={project} 
+                    index={index}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
                 ))}
               </div>
             ) : searchQuery ? (
@@ -217,7 +275,11 @@ function App() {
                         <Clock className="w-3 h-3" />
                         <span>{formatDate(project.generatedAt)}</span>
                       </div>
-                      <ProjectCard project={project} index={index} />
+                      <ProjectCard 
+                        project={project} 
+                        index={index}
+                        onToggleFavorite={handleToggleFavorite}
+                      />
                     </div>
                   ))}
                 </div>

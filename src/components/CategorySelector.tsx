@@ -31,42 +31,60 @@ const iconMap: Record<string, any> = {
 }
 
 export function CategorySelector({ selection, onSelectionChange }: CategorySelectorProps) {
-  const selectedMainCategory = MAIN_CATEGORIES.find(
-    cat => cat.name === selection.mainCategory
-  )
-
   const handleMainCategoryClick = (categoryName: string) => {
-    if (selection.mainCategory === categoryName) {
-      onSelectionChange({ mainCategory: null, subCategories: [] })
+    const isCurrentlySelected = selection.mainCategories.includes(categoryName)
+    
+    if (isCurrentlySelected) {
+      const newSubCategories = { ...selection.subCategories }
+      delete newSubCategories[categoryName]
+      
+      onSelectionChange({
+        mainCategories: selection.mainCategories.filter(c => c !== categoryName),
+        subCategories: newSubCategories
+      })
     } else {
-      onSelectionChange({ mainCategory: categoryName, subCategories: [] })
+      onSelectionChange({
+        mainCategories: [...selection.mainCategories, categoryName],
+        subCategories: selection.subCategories
+      })
     }
   }
 
-  const handleSubCategoryClick = (subCategoryName: string) => {
-    const currentSubs = selection.subCategories || []
+  const handleSubCategoryClick = (mainCategoryName: string, subCategoryName: string) => {
+    const currentSubs = selection.subCategories[mainCategoryName] || []
+    const newSubCategories = { ...selection.subCategories }
+    
     if (currentSubs.includes(subCategoryName)) {
-      onSelectionChange({
-        ...selection,
-        subCategories: currentSubs.filter(s => s !== subCategoryName)
-      })
+      newSubCategories[mainCategoryName] = currentSubs.filter(s => s !== subCategoryName)
+      if (newSubCategories[mainCategoryName].length === 0) {
+        delete newSubCategories[mainCategoryName]
+      }
     } else {
-      onSelectionChange({
-        ...selection,
-        subCategories: [...currentSubs, subCategoryName]
-      })
+      newSubCategories[mainCategoryName] = [...currentSubs, subCategoryName]
     }
+
+    onSelectionChange({
+      ...selection,
+      subCategories: newSubCategories
+    })
   }
 
   const clearSelection = () => {
-    onSelectionChange({ mainCategory: null, subCategories: [] })
+    onSelectionChange({ mainCategories: [], subCategories: {} })
   }
+
+  const selectedCategories = MAIN_CATEGORIES.filter(cat => 
+    selection.mainCategories.includes(cat.name)
+  )
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Select Category</h3>
-        {selection.mainCategory && (
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold">Select Categories</h3>
+          <span className="text-xs text-muted-foreground">(select multiple)</span>
+        </div>
+        {selection.mainCategories.length > 0 && (
           <Button
             variant="ghost"
             size="sm"
@@ -74,7 +92,7 @@ export function CategorySelector({ selection, onSelectionChange }: CategorySelec
             className="text-muted-foreground hover:text-foreground"
           >
             <X className="mr-1" weight="bold" size={16} />
-            Clear
+            Clear All
           </Button>
         )}
       </div>
@@ -83,7 +101,7 @@ export function CategorySelector({ selection, onSelectionChange }: CategorySelec
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {MAIN_CATEGORIES.map((category) => {
             const Icon = iconMap[category.icon] || DotsThree
-            const isSelected = selection.mainCategory === category.name
+            const isSelected = selection.mainCategories.includes(category.name)
 
             return (
               <Button
@@ -106,35 +124,42 @@ export function CategorySelector({ selection, onSelectionChange }: CategorySelec
         </div>
       </ScrollArea>
 
-      {selectedMainCategory && (
-        <div className="flex flex-col gap-4 p-4 bg-muted/30 rounded-lg border border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-muted-foreground">
-              Sub-Categories for {selectedMainCategory.name}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              (optional - select one or more)
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {selectedMainCategory.subCategories.map((subCat) => {
-              const isSelected = selection.subCategories.includes(subCat)
-              return (
-                <Badge
-                  key={subCat}
-                  variant={isSelected ? 'default' : 'outline'}
-                  className={`cursor-pointer transition-all ${
-                    isSelected
-                      ? 'bg-accent text-accent-foreground hover:bg-accent/90'
-                      : 'hover:border-accent hover:bg-accent/10'
-                  }`}
-                  onClick={() => handleSubCategoryClick(subCat)}
-                >
-                  {subCat}
-                </Badge>
-              )
-            })}
-          </div>
+      {selectedCategories.length > 0 && (
+        <div className="flex flex-col gap-4">
+          {selectedCategories.map((category) => (
+            <div 
+              key={category.name}
+              className="flex flex-col gap-3 p-4 bg-muted/30 rounded-lg border border-border"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-foreground">
+                  {category.name}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  (optional sub-categories)
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {category.subCategories.map((subCat) => {
+                  const isSelected = (selection.subCategories[category.name] || []).includes(subCat)
+                  return (
+                    <Badge
+                      key={subCat}
+                      variant={isSelected ? 'default' : 'outline'}
+                      className={`cursor-pointer transition-all ${
+                        isSelected
+                          ? 'bg-accent text-accent-foreground hover:bg-accent/90'
+                          : 'hover:border-accent hover:bg-accent/10'
+                      }`}
+                      onClick={() => handleSubCategoryClick(category.name, subCat)}
+                    >
+                      {subCat}
+                    </Badge>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

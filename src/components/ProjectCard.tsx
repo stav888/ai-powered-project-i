@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Copy, Check } from '@phosphor-icons/react'
+import { Copy, Check, Heart } from '@phosphor-icons/react'
 import { ProjectIdea } from '@/lib/types'
 import { toast } from 'sonner'
 import { useState } from 'react'
@@ -9,9 +9,10 @@ import { useState } from 'react'
 interface ProjectCardProps {
   project: ProjectIdea
   index?: number
+  onToggleFavorite?: (id: string) => void
 }
 
-export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
+export function ProjectCard({ project, index = 0, onToggleFavorite }: ProjectCardProps) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -26,6 +27,20 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
       toast.error('Failed to copy', {
         description: 'Please try again'
       })
+    }
+  }
+
+  const handleToggleFavorite = () => {
+    if (onToggleFavorite) {
+      onToggleFavorite(project.id)
+      toast.success(
+        project.isFavorite ? 'Removed from favorites' : 'Added to favorites',
+        {
+          description: project.isFavorite 
+            ? 'Project unmarked as favorite' 
+            : 'Project marked as favorite'
+        }
+      )
     }
   }
 
@@ -44,14 +59,29 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
 
   return (
     <Card 
-      className="project-card p-6 md:p-8 flex flex-col gap-6 border-border shadow-sm"
+      className="project-card p-6 md:p-8 flex flex-col gap-6 border-border shadow-sm relative"
       style={{
         animationDelay: `${index * 100}ms`,
         animationFillMode: 'backwards'
       }}
     >
+      {onToggleFavorite && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleToggleFavorite}
+          className="absolute top-4 right-4 h-10 w-10 p-0 hover:bg-accent/10"
+        >
+          <Heart 
+            size={24}
+            weight={project.isFavorite ? 'fill' : 'regular'}
+            className={project.isFavorite ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}
+          />
+        </Button>
+      )}
+
       <div className="flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4 pr-12">
           <h3 className="text-2xl font-semibold tracking-tight">{project.name}</h3>
           <Badge className={`shrink-0 ${getDifficultyColor(project.difficulty)}`}>
             {project.difficulty}

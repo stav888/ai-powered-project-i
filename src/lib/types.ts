@@ -11,6 +11,7 @@ export interface ProjectIdea {
   sparkPrompt: string
   generatedAt: string
   categories?: string[]
+  isFavorite?: boolean
 }
 
 export interface GeneratedIdeaHistory {
@@ -24,6 +25,6 @@ export interface MainCategory {
 }
 
 export interface CategorySelection {
-  mainCategory: string | null
-  subCategories: string[]
+  mainCategories: string[]
+  subCategories: Record<string, string[]>
 }
