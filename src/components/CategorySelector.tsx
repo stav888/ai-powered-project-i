@@ -10,7 +10,6 @@ import {
   ListChecks, TerminalWindow, Brain, ChartLine, PenNib,
   Browser, GitBranch, Chats
 } from '@phosphor-icons/react'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { X } from '@phosphor-icons/react'
 
 interface CategorySelectorProps {
@@ -97,10 +96,10 @@ export function CategorySelector({ selection, onSelectionChange }: CategorySelec
   )
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold">Select Categories</h3>
+        <div className="flex items-center gap-1.5">
+          <h3 className="text-sm font-semibold">Select Categories</h3>
           <span className="text-xs text-muted-foreground">(select multiple)</span>
         </div>
         {selection.mainCategories.length > 0 && (
@@ -108,64 +107,62 @@ export function CategorySelector({ selection, onSelectionChange }: CategorySelec
             variant="ghost"
             size="sm"
             onClick={clearSelection}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground h-7 px-2 text-xs"
           >
-            <X className="mr-1" weight="bold" size={16} />
+            <X className="mr-1" weight="bold" size={14} />
             Clear All
           </Button>
         )}
       </div>
 
-      <ScrollArea className="h-[280px]">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-          {MAIN_CATEGORIES.map((category) => {
-            const Icon = iconMap[category.icon] || DotsThree
-            const isSelected = selection.mainCategories.includes(category.name)
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+        {MAIN_CATEGORIES.map((category) => {
+          const Icon = iconMap[category.icon] || DotsThree
+          const isSelected = selection.mainCategories.includes(category.name)
 
-            return (
-              <Button
-                key={category.name}
-                variant={isSelected ? 'default' : 'outline'}
-                className={`h-auto py-4 px-4 flex flex-col items-center gap-2 ${
-                  isSelected 
-                    ? 'bg-primary text-primary-foreground border-primary' 
-                    : 'hover:border-accent hover:bg-accent/5'
-                }`}
-                onClick={() => handleMainCategoryClick(category.name)}
-              >
-                <Icon size={24} weight={isSelected ? 'fill' : 'regular'} />
-                <span className="text-xs text-center leading-tight font-medium">
-                  {category.name}
-                </span>
-              </Button>
-            )
-          })}
-        </div>
-      </ScrollArea>
+          return (
+            <Button
+              key={category.name}
+              variant={isSelected ? 'default' : 'outline'}
+              className={`h-auto py-2 px-2 flex flex-col items-center gap-1 ${
+                isSelected 
+                  ? 'bg-primary text-primary-foreground border-primary' 
+                  : 'hover:border-accent hover:bg-accent/5'
+              }`}
+              onClick={() => handleMainCategoryClick(category.name)}
+            >
+              <Icon size={18} weight={isSelected ? 'fill' : 'regular'} />
+              <span className="text-xs text-center leading-tight font-medium">
+                {category.name}
+              </span>
+            </Button>
+          )
+        })}
+      </div>
 
       {selectedCategories.length > 0 && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           {selectedCategories.map((category) => (
             <div 
               key={category.name}
-              className="flex flex-col gap-3 p-4 bg-muted/30 rounded-lg border border-border"
+              className="flex flex-col gap-2 p-2 bg-muted/30 rounded-lg border border-border"
             >
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-foreground">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-semibold text-foreground">
                   {category.name}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   (optional sub-categories)
                 </span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {category.subCategories.map((subCat) => {
                   const isSelected = (selection.subCategories[category.name] || []).includes(subCat)
                   return (
                     <Badge
                       key={subCat}
                       variant={isSelected ? 'default' : 'outline'}
-                      className={`cursor-pointer transition-all ${
+                      className={`cursor-pointer transition-all text-xs px-1.5 py-0 ${
                         isSelected
                           ? 'bg-accent text-accent-foreground hover:bg-accent/90'
                           : 'hover:border-accent hover:bg-accent/10'

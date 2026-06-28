@@ -59,7 +59,7 @@ export function ProjectCard({ project, index = 0, onToggleFavorite }: ProjectCar
 
   return (
     <Card 
-      className="project-card p-6 md:p-8 flex flex-col gap-6 border-border shadow-sm relative"
+      className="project-card p-4 flex flex-col gap-3 border-border shadow-sm relative"
       style={{
         animationDelay: `${index * 100}ms`,
         animationFillMode: 'backwards'
@@ -70,48 +70,48 @@ export function ProjectCard({ project, index = 0, onToggleFavorite }: ProjectCar
           variant="ghost"
           size="sm"
           onClick={handleToggleFavorite}
-          className="absolute top-4 right-4 h-10 w-10 p-0 hover:bg-accent/10"
+          className="absolute top-2 right-2 h-8 w-8 p-0 hover:bg-accent/10"
         >
           <Heart 
-            size={24}
+            size={18}
             weight={project.isFavorite ? 'fill' : 'regular'}
             className={project.isFavorite ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}
           />
         </Button>
       )}
 
-      <div className="flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-4 pr-12">
-          <h3 className="text-2xl font-semibold tracking-tight">{project.name}</h3>
-          <Badge className={`shrink-0 ${getDifficultyColor(project.difficulty)}`}>
+      <div className="flex flex-col gap-1.5">
+        <div className="flex items-start justify-between gap-3 pr-9">
+          <h3 className="text-base font-semibold tracking-tight leading-tight">{project.name}</h3>
+          <Badge className={`shrink-0 text-xs px-1.5 py-0 ${getDifficultyColor(project.difficulty)}`}>
             {project.difficulty}
           </Badge>
         </div>
-        <p className="text-base text-muted-foreground leading-relaxed">
+        <p className="text-xs text-muted-foreground leading-snug">
           {project.shortDescription}
         </p>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <h4 className="text-sm font-semibold uppercase tracking-wide text-foreground/70">
+      <div className="flex flex-col gap-1.5">
+        <h4 className="text-xs font-semibold uppercase tracking-wide text-foreground/70">
           Key Features
         </h4>
-        <ul className="space-y-2">
+        <ul className="space-y-1">
           {project.keyFeatures.map((feature, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
-              <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
+            <li key={i} className="flex items-start gap-1.5 text-xs text-foreground/80 leading-snug">
+              <span className="mt-1 h-1 w-1 rounded-full bg-accent shrink-0" />
               <span>{feature}</span>
             </li>
           ))}
         </ul>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         {project.tags.map((tag, i) => (
           <Badge 
             key={i} 
             variant="outline"
-            className="bg-secondary/50 text-secondary-foreground border-border/50"
+            className="bg-secondary/50 text-secondary-foreground border-border/50 text-xs px-1.5 py-0"
           >
             {tag}
           </Badge>
@@ -120,17 +120,16 @@ export function ProjectCard({ project, index = 0, onToggleFavorite }: ProjectCar
 
       <Button 
         onClick={handleCopy}
-        className="w-full mt-2 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold"
-        size="lg"
+        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-xs py-2 h-auto"
       >
         {copied ? (
           <>
-            <Check className="mr-2" weight="bold" />
+            <Check className="mr-1.5" weight="bold" size={14} />
             Copied!
           </>
         ) : (
           <>
-            <Copy className="mr-2" weight="bold" />
+            <Copy className="mr-1.5" weight="bold" size={14} />
             Copy Prompt to Build in Spark
           </>
         )}
